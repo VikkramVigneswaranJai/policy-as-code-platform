@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+
+{% block title %}Policies - Policy-as-Code Platform{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 rounded-2xl p-8 mb-8 text-white shadow-card">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div class="mb-6 lg:mb-0">
+            <h1 class="text-3xl font-bold mb-2">Policy Management</h1>
+            <p class="text-primary-100 text-lg">Create and manage Rego policies for authorization control</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div class="text-2xl font-bold">{{ policies|length }}</div>
+                <div class="text-primary-100 text-sm">Total Policies</div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div class="text-2xl font-bold">{{ policies|selectattr('is_active', 'equalto', true)|list|length }}</div>
+                <div class="text-primary-100 text-sm">Active Policies</div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                <div class="text-2xl font-bold">{{ policies|selectattr('is_active', 'equalto', false)|list|length }}</div>
+                <div class="text-primary-100 text-sm">Inactive Policies</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Actions Bar -->
+<div class="bg-white rounded-xl shadow-card border border-secondary-200 p-6 mb-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <!-- Search and Filters -->
+        <div class="flex flex-col sm:flex-row gap-4 flex-1">
+            <div class="relative flex-1 max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-secondary-400"></i>
+                </div>
+                <input type="text" id="policySearch" placeholder="Search policies by name or description..."
+                    class="w-full pl-12 pr-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-secondary-50 focus:bg-white">
+            </div>
+            <select id="statusFilter" class="px-4 py-3 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-secondary-50 focus:bg-white">
+                <option value="all">All Status</option>
+                <option value="active">Active Only</option>
+                <option value="inactive">Inactive Only</option>
+            </select>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-3">
+            <a href="/policies/new" class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <i class="fas fa-plus mr-2"></i>
+                New Policy
+            </a>
+        </div>
+    </div>
+</div>
+<!-- Policies Table -->
+<div class="bg-white rounded-xl shadow-card border border-secondary-200 overflow-hidden">
+    {% if policies %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-secondary-200">
+            <thead class="bg-secondary-50">
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Policy</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Description</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Version</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Created</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold text-secondary-600 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-secondary-100">
+                {% for policy in policies %}
+                <tr class="policy-row hover:bg-secondary-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                                <i class="fas fa-file-contract text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-semibold text-secondary-900">{{ policy.name }}</div>
+                                <div class="text-xs text-secondary-500">ID: {{ policy.id }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-secondary-700 max-w-xs">
+                            {{ policy.description or 'No description provided' }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary-100 text-secondary-800">
+                            <i class="fas fa-code-branch mr-2"></i>
+                            v{{ policy.version }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if policy.is_active %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Active
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary-100 text-secondary-800">
+                            <i class="fas fa-pause-circle mr-2"></i>
+                            Inactive
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-600">
+                        <div class="flex items-center">
+                            <i class="fas fa-calendar-alt text-secondary-400 mr-2"></i>
+                            {{ policy.created_at.strftime('%b %d, %Y') }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="viewPolicy({{ policy.id }})" class="text-primary-600 hover:text-primary-800 p-2 rounded-lg hover:bg-primary-50 transition-colors" title="View Policy">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <a href="/policies/edit/{{ policy.id }}" class="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="Edit Policy">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button onclick="togglePolicy({{ policy.id }}, {{ 'true' if policy.is_active else 'false' }})"
+                                class="p-2 rounded-lg transition-colors {% if policy.is_active %}text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50{% else %}text-green-600 hover:text-green-800 hover:bg-green-50{% endif %}"
+                                title="{{ 'Disable Policy' if policy.is_active else 'Enable Policy' }}">
+                                <i class="fas fa-{{ 'pause' if policy.is_active else 'play' }}"></i>
+                            </button>
+                            <button onclick="deletePolicy({{ policy.id }}, '{{ policy.name }}')" class="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Delete Policy">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <div class="w-20 h-20 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-file-contract text-secondary-400 text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-secondary-900 mb-2">No Policies Found</h3>
+        <p class="text-secondary-600 mb-6 max-w-md mx-auto">Get started by creating your first Rego policy to define authorization rules for your application.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="/policies/new" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 shadow-lg hover:shadow-xl">
+                <i class="fas fa-plus mr-2"></i>
+                Create First Policy
+            </a>
+            <button onclick="loadSamplePolicies()" class="inline-flex items-center px-6 py-3 bg-secondary-100 text-secondary-700 rounded-lg hover:bg-secondary-200 transition-colors">
+                <i class="fas fa-magic mr-2"></i>
+                Load Samples
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- View Policy Modal -->
+<div id="policyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+        <div class="flex justify-between items-center px-6 py-4 border-b">
+            <h3 id="modalTitle" class="text-lg font-semibold text-gray-900">Policy Details</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto max-h-[70vh]">
+            <pre id="policyCode" class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm"></pre>
+        </div>
+    </div>
+</div>
+
+<!-- Policy Information Cards -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+        <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-shield-alt text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-blue-900">Authorization Engine</h3>
+        </div>
+        <p class="text-blue-700 text-sm leading-relaxed">
+            Policies are written in Rego and evaluated by Open Policy Agent (OPA) to make fine-grained authorization decisions.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+        <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-users-cog text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-purple-900">ABAC Support</h3>
+        </div>
+        <p class="text-purple-700 text-sm leading-relaxed">
+            Attribute-Based Access Control using user roles, departments, and custom attributes for flexible policy decisions.
+        </p>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+        <div class="flex items-center mb-4">
+            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-sync-alt text-white"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-green-900">Real-time Evaluation</h3>
+        </div>
+        <p class="text-green-700 text-sm leading-relaxed">
+            Policies are evaluated in real-time for each authorization request, ensuring up-to-date access control decisions.
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Search functionality
+    document.getElementById('policySearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const policyRows = document.querySelectorAll('.policy-row');
+
+        policyRows.forEach(row => {
+            const name = row.querySelector('.text-sm.font-semibold').textContent.toLowerCase();
+            const description = row.querySelector('.text-secondary-700').textContent.toLowerCase();
+            const status = row.querySelector('.rounded-full').textContent.toLowerCase().trim();
+
+            let matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+            let matchesStatus = statusFilter === 'all' ||
+                              (statusFilter === 'active' && status.includes('active')) ||
+                              (statusFilter === 'inactive' && status.includes('inactive'));
+
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Status filter functionality
+    document.getElementById('statusFilter').addEventListener('change', function() {
+        // Trigger search to apply filter
+        document.getElementById('policySearch').dispatchEvent(new Event('input'));
+    });
+
+    // Export policies functionality
+    function exportPolicies() {
+        const policies = Array.from(document.querySelectorAll('.policy-row')).filter(row => row.style.display !== 'none').map(row => {
+            const cells = row.querySelectorAll('td');
+            return {
+                name: cells[0].querySelector('.text-sm.font-semibold').textContent,
+                description: cells[1].textContent.trim(),
+                version: cells[2].textContent.trim(),
+                status: cells[3].textContent.trim(),
+                created: cells[4].textContent.trim()
+            };
+        });
+
+        const csvContent = [
+            ['Name', 'Description', 'Version', 'Status', 'Created'],
+            ...policies.map(policy => [
+                policy.name, policy.description, policy.version, policy.status, policy.created
+            ])
+        ].map(row => row.join(',')).join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'policies_export.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+
+    // Import policies functionality
+    function importPolicies() {
+        alert('Import functionality would open a file dialog here. Implementation depends on your backend API.');
+    }
+
+    // Load sample policies functionality
+    function loadSamplePolicies() {
+        if (confirm('This will create sample policies for demonstration purposes. Continue?')) {
+            alert('Sample policies initialization would be implemented here. Please create policies manually for now.');
+        }
+    }
+
+    // Enhanced view policy with better modal
+    async function viewPolicy(id) {
+        const token = getToken();
+        if (!token) {
+            alert('Please login first');
+            window.location.href = '/login';
+            return;
+        }
+
+        try {
+            const response = await fetch(`/policy/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                // Create enhanced modal
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
+                        <div class="flex justify-between items-center px-6 py-4 border-b border-secondary-200 bg-secondary-50">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-file-contract text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-secondary-900">${data.data.policy.name}</h3>
+                                    <p class="text-sm text-secondary-600">Policy Details & Code</p>
+                                </div>
+                            </div>
+                            <button onclick="this.closest('.fixed').remove()" class="text-secondary-400 hover:text-secondary-600 p-2 rounded-lg hover:bg-secondary-100 transition-colors">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="p-6 overflow-y-auto max-h-[70vh]">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                                <div class="bg-secondary-50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-secondary-900 mb-2">Policy Info</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div><span class="font-medium">Version:</span> v${data.data.policy.version}</div>
+                                        <div><span class="font-medium">Status:</span>
+                                            <span class="px-2 py-1 rounded-full text-xs ${data.data.policy.is_active ? 'bg-green-100 text-green-800' : 'bg-secondary-100 text-secondary-800'}">
+                                                ${data.data.policy.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </div>
+                                        <div><span class="font-medium">Created:</span> ${new Date(data.data.policy.created_at).toLocaleDateString()}</div>
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-2 bg-secondary-50 rounded-xl p-4">
+                                    <h4 class="font-semibold text-secondary-900 mb-2">Description</h4>
+                                    <p class="text-sm text-secondary-700">${data.data.policy.description || 'No description provided'}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-secondary-900 mb-3">Rego Policy Code</h4>
+                                <pre class="bg-secondary-900 text-green-400 p-4 rounded-xl overflow-x-auto text-sm font-mono border border-secondary-200">${data.data.policy.policy_code}</pre>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Close on escape
+                document.addEventListener('keydown', function closeOnEscape(e) {
+                    if (e.key === 'Escape') {
+                        modal.remove();
+                        document.removeEventListener('keydown', closeOnEscape);
+                    }
+                });
+            } else {
+                alert(data.message || 'Failed to load policy');
+            }
+        } catch (e) {
+            alert('Error loading policy');
+        }
+    }
+
+    // Enhanced toggle policy
+    async function togglePolicy(id, isActive) {
+        const token = getToken();
+        if (!token) {
+            alert('Please login first');
+            window.location.href = '/login';
+            return;
+        }
+
+        const action = isActive ? 'disable' : 'enable';
+        const confirmMessage = `Are you sure you want to ${action} this policy? ${isActive ? 'It will no longer be used for authorization decisions.' : 'It will be activated and used for authorization decisions.'}`;
+
+        if (!confirm(confirmMessage)) return;
+
+        try {
+            const response = await fetch(`/policy/toggle/${id}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to toggle policy');
+            }
+        } catch (e) {
+            alert('Error toggling policy');
+        }
+    }
+
+    // Enhanced delete policy
+    async function deletePolicy(id, name) {
+        const token = getToken();
+        if (!token) {
+            alert('Please login first');
+            window.location.href = '/login';
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to delete the policy "${name}"? This action cannot be undone and may affect authorization decisions.`)) return;
+
+        try {
+            const response = await fetch(`/policy/delete/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to delete policy');
+            }
+        } catch (e) {
+            alert('Error deleting policy');
+        }
+    }
+
+    // Add loading states and animations
+    document.addEventListener('DOMContentLoaded', () => {
+        // Add fade-in animation to table rows
+        const rows = document.querySelectorAll('.policy-row');
+        rows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 30);
+        });
+    });
+</script>
+{% endblock %}

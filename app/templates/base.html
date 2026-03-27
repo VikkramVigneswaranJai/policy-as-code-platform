@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Policy-as-Code Platform{% endblock %}</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'bounce-subtle': 'bounceSubtle 2s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Code editor styling */
+        .code-editor {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            tab-size: 4;
+        }
+
+        /* Gradient backgrounds */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .gradient-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #4facfe 100%);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes bounceSubtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* Custom shadows */
+        .shadow-soft { box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); }
+        .shadow-card { box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1); }
+        .shadow-hover { transition: box-shadow 0.3s ease; }
+        .shadow-hover:hover { box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15); }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gradient-to-br from-secondary-50 to-secondary-100 min-h-screen font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-lg shadow-soft border-b border-secondary-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-3 group">
+                        <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                            <i class="fas fa-shield-alt text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">Policy-as-Code</span>
+                            <div class="text-xs text-secondary-500 -mt-1">Platform</div>
+                        </div>
+                    </a>
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex ml-12 space-x-1">
+                        <a href="/dashboard" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/policies" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-file-contract"></i>
+                            <span>Policies</span>
+                        </a>
+                        <a href="/users" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                        <a href="/audit" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-history"></i>
+                            <span>Audit Logs</span>
+                        </a>
+                        <a href="/test" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-flask"></i>
+                            <span>Test Policy</span>
+                        </a>
+                        <a href="/api-docs" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-code"></i>
+                            <span>API Docs</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <!-- OPA Status -->
+                    <div id="opa-status" class="hidden md:flex items-center space-x-2 px-3 py-1 rounded-full bg-secondary-100 text-secondary-600 text-xs">
+                        <div class="w-2 h-2 rounded-full bg-secondary-400 animate-bounce-subtle" id="opa-indicator"></div>
+                        <span id="opa-text">Checking OPA...</span>
+                    </div>
+
+                    <!-- Auth Buttons -->
+                    <div id="auth-buttons" class="flex items-center space-x-3">
+                        <a href="/login" class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-lg hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        </a>
+                        <a href="/register" class="px-4 py-2 text-sm font-medium text-primary-600 border-2 border-primary-600 rounded-lg hover:bg-primary-50 transition-all duration-200">
+                            <i class="fas fa-user-plus mr-2"></i>Register
+                        </a>
+                    </div>
+
+                    <!-- User Info -->
+                    <div id="user-info" class="hidden flex items-center space-x-3">
+                        <div class="flex items-center space-x-2 px-3 py-2 bg-secondary-100 rounded-lg">
+                            <div class="w-8 h-8 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-sm"></i>
+                            </div>
+                            <span id="user-name" class="text-sm font-medium text-secondary-700"></span>
+                        </div>
+                        <button onclick="logout()" class="px-3 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 rounded-lg hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1">
+                <a href="/dashboard" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/policies" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                    <i class="fas fa-file-contract"></i>
+                    <span>Policies</span>
+                </a>
+                <a href="/users" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+                <a href="/audit" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                    <i class="fas fa-history"></i>
+                    <span>Audit Logs</span>
+                </a>
+                <a href="/test" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                    <i class="fas fa-flask"></i>
+                    <span>Test Policy</span>
+                </a>
+                <a href="/api-docs" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                    <i class="fas fa-code"></i>
+                    <span>API Docs</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="space-y-3">
+        {% for category, message in messages %}
+        <div class="animate-slide-up bg-{{ 'red' if category == 'error' else 'green' }}-50 border-l-4 border-{{ 'red' if category == 'error' else 'green' }}-400 text-{{ 'red' if category == 'error' else 'green' }}-700 px-6 py-4 rounded-r-lg shadow-soft max-w-4xl">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 mt-0.5">
+                    <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }} text-{{ 'red' if category == 'error' else 'green' }}-400 text-lg"></i>
+                </div>
+                <div class="ml-3 flex-1">
+                    <p class="text-sm font-medium">{{ message }}</p>
+                </div>
+                <div class="ml-4 flex-shrink-0">
+                    <button class="inline-flex rounded-md p-1.5 text-{{ 'red' if category == 'error' else 'green' }}-400 hover:text-{{ 'red' if category == 'error' else 'green' }}-600 focus:outline-none hover:bg-{{ 'red' if category == 'error' else 'green' }}-100 transition-colors" onclick="this.parentElement.parentElement.parentElement.remove()">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 backdrop-blur-lg border-t border-secondary-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-shield-alt text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">Policy-as-Code</div>
+                            <div class="text-xs text-secondary-500">Platform</div>
+                        </div>
+                    </div>
+                    <p class="text-secondary-600 text-sm leading-relaxed">
+                        A modern authorization platform built with Flask, Open Policy Agent, and cutting-edge web technologies.
+                        Empowering secure, policy-driven access control for enterprise applications.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-sm font-semibold text-secondary-900 mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/dashboard" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Dashboard</a></li>
+                        <li><a href="/policies" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Policies</a></li>
+                        <li><a href="/users" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">User Management</a></li>
+                        <li><a href="/audit" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Audit Logs</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h3 class="text-sm font-semibold text-secondary-900 mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/test" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Policy Testing</a></li>
+                        <li><a href="/api-docs" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">API Documentation</a></li>
+                        <li><a href="https://www.openpolicyagent.org/" target="_blank" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Open Policy Agent</a></li>
+                        <li><a href="https://flask.palletsprojects.com/" target="_blank" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Flask Framework</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-secondary-200 mt-8 pt-6">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                    <p class="text-xs text-secondary-500">
+                        © 2026 Policy-as-Code Platform. Academic Project.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-6">
+                        <span class="text-xs text-secondary-500 flex items-center">
+                            <i class="fas fa-code text-primary-500 mr-2"></i>
+                            Built with modern web technologies
+                        </span>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xs text-secondary-500">Powered by:</span>
+                            <div class="flex items-center space-x-2">
+                                <i class="fab fa-python text-yellow-500"></i>
+                                <i class="fas fa-flask text-secondary-600"></i>
+                                <i class="fas fa-shield-alt text-primary-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Store JWT token in localStorage
+        const AUTH_TOKEN_KEY = 'pac_auth_token';
+        const AUTH_USER_KEY = 'pac_user';
+
+        function getToken() {
+            return localStorage.getItem(AUTH_TOKEN_KEY);
+        }
+
+        function setToken(token) {
+            localStorage.setItem(AUTH_TOKEN_KEY, token);
+        }
+
+        function getUser() {
+            const user = localStorage.getItem(AUTH_USER_KEY);
+            return user ? JSON.parse(user) : null;
+        }
+
+        function setUser(user) {
+            localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+        }
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = '/login';
+        }
+
+        // API helper function
+        async function apiCall(url, method = 'GET', data = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const token = getToken();
+            if (token) {
+                options.headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            const response = await fetch(url, options);
+            return response.json();
+        }
+
+        // Check OPA status on page load
+        async function checkOPAStatus() {
+            const statusEl = document.getElementById('opa-status');
+            try {
+                const token = getToken();
+                if (token) {
+                    const result = await apiCall('/policy/opa-status');
+                    if (result.data && result.data.opa_healthy) {
+                        statusEl.innerHTML = `
+                            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                            <span class="text-green-600">OPA Connected</span>
+                        `;
+                    } else {
+                        statusEl.innerHTML = `
+                            <span class="w-2 h-2 rounded-full bg-yellow-500 mr-2"></span>
+                            <span class="text-yellow-600">OPA Fallback Mode</span>
+                        `;
+                    }
+                } else {
+                    statusEl.innerHTML = `
+                        <span class="w-2 h-2 rounded-full bg-gray-400 mr-2"></span>
+                        <span class="text-gray-500">Login Required</span>
+                    `;
+                }
+            } catch (e) {
+                statusEl.innerHTML = `
+                    <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                    <span class="text-red-600">Error</span>
+                `;
+            }
+        }
+
+        // Update UI based on login status
+        function updateAuthUI() {
+            const user = getUser();
+            const authButtons = document.getElementById('auth-buttons');
+            const userInfo = document.getElementById('user-info');
+            const userName = document.getElementById('user-name');
+            
+            if (user) {
+                authButtons.classList.add('hidden');
+                userInfo.classList.remove('hidden');
+                userName.textContent = `${user.username} (${user.role})`;
+            } else {
+                authButtons.classList.remove('hidden');
+                userInfo.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkOPAStatus();
+            updateAuthUI();
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (mobileMenu.classList.contains('hidden')) {
+                    icon.className = 'fas fa-bars';
+                } else {
+                    icon.className = 'fas fa-times';
+                }
+            });
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    icon.className = 'fas fa-bars';
+                }
+            });
+        });
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

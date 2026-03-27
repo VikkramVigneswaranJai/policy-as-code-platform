@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit Policy' if policy else 'Create Policy' }} - Policy-as-Code Platform{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-8">
+        <a href="/policies" class="text-primary-600 hover:text-primary-700 flex items-center text-sm mb-4">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back to Policies
+        </a>
+        <h1 class="text-2xl font-bold text-gray-900">{{ 'Edit Policy' if policy else 'Create New Policy' }}</h1>
+        <p class="text-gray-500 mt-1">{{ 'Modify the existing Rego policy' if policy else 'Define a new Rego policy for authorization' }}</p>
+    </div>
+
+    <form id="policyForm" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="space-y-6">
+            <!-- Policy Name -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Policy Name *</label>
+                <input type="text" id="name" name="name" required
+                    value="{{ policy.name if policy else '' }}"
+                    {% if policy %}readonly{% endif %}
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 {% if policy %}bg-gray-100{% endif %}"
+                    placeholder="e.g., rbac_policy">
+                <p class="text-sm text-gray-500 mt-1">Unique identifier for the policy (cannot be changed after creation)</p>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <textarea id="description" name="description" rows="2"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Describe what this policy does">{{ policy.description if policy else '' }}</textarea>
+            </div>
+
+            <!-- Version -->
+            <div>
+                <label for="version" class="block text-sm font-medium text-gray-700 mb-1">Version</label>
+                <input type="text" id="version" name="version"
+                    value="{{ policy.version if policy else '1.0.0' }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="1.0.0">
+            </div>
+
+            <!-- Policy Code -->
+            <div>
+                <label for="policy_code" class="block text-sm font-medium text-gray-700 mb-1">Policy Code (Rego) *</label>
+                <textarea id="policy_code" name="policy_code" rows="20" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-mono text-sm"
+                    placeholder="package authz
+
+default allow := false
+
+allow {
+    input.user.role == &quot;admin&quot;
+}">{{ policy.policy_code if policy else '' }}</textarea>
+                <p class="text-sm text-gray-500 mt-1">Write your Rego policy code here. The policy should define an <code>allow</code> rule.</p>
+            </div>
+
+            <!-- Active Status -->
+            <div class="flex items-center">
+                <input type="checkbox" id="is_active" name="is_active"
+                    {% if not policy or policy.is_active %}checked{% endif %}
+                    class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                <label for="is_active" class="ml-2 text-sm text-gray-700">Enable this policy immediately</label>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end space-x-4 pt-4 border-t">
+                <a href="/policies" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Cancel</a>
+                <button type="submit" id="submitBtn"
+                    class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                    {{ 'Update Policy' if policy else 'Create Policy' }}
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Sample Policies -->
+    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Sample Policy Templates</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button onclick="loadTemplate('rbac')" class="text-left p-4 border border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50">
+                <h3 class="font-medium text-gray-900">RBAC Policy</h3>
+                <p class="text-sm text-gray-500">Role-based access control with admin, manager, and employee roles.</p>
+            </button>
+            <button onclick="loadTemplate('abac')" class="text-left p-4 border border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50">
+                <h3 class="font-medium text-gray-900">ABAC Policy</h3>
+                <p class="text-sm text-gray-500">Attribute-based with time and department restrictions.</p>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const templates = {
+        rbac: `# Role-Based Access Control (RBAC) Policy
+package authz
+
+import future.keywords.if
+import future.keywords.in
+
+default allow := false
+default reason := "Access denied"
+
+# Admin has full access
+allow if {
+    input.user.role == "admin"
+}
+
+reason := "Admin has full access" if {
+    input.user.role == "admin"
+}
+
+# Manager can read and write
+allow if {
+    input.user.role == "manager"
+    input.action in ["read", "write"]
+}
+
+reason := "Manager can read and write resources" if {
+    input.user.role == "manager"
+    input.action in ["read", "write"]
+}
+
+# Employee can only read
+allow if {
+    input.user.role == "employee"
+    input.action == "read"
+}
+
+reason := "Employee can only read resources" if {
+    input.user.role == "employee"
+    input.action == "read"
+}`,
+        abac: `# Attribute-Based Access Control (ABAC) Policy
+package authz
+
+import future.keywords.if
+import future.keywords.in
+
+default allow := false
+default reason := "Access denied"
+
+# Office hours check (9 AM - 6 PM)
+is_office_hours if {
+    input.environment.hour >= 9
+    input.environment.hour < 18
+}
+
+# Same department check
+same_department if {
+    input.user.department == input.resource.department
+}
+
+# Admin - full access anytime
+allow if {
+    input.user.role == "admin"
+}
+
+reason := "Admin has unrestricted access" if {
+    input.user.role == "admin"
+}
+
+# Manager - office hours, own department
+allow if {
+    input.user.role == "manager"
+    is_office_hours
+    same_department
+}
+
+reason := "Manager access during office hours" if {
+    input.user.role == "manager"
+    is_office_hours
+    same_department
+}
+
+reason := "Manager denied: outside office hours" if {
+    input.user.role == "manager"
+    not is_office_hours
+}
+
+# Employee - read only, own department
+allow if {
+    input.user.role == "employee"
+    input.action == "read"
+    same_department
+}
+
+reason := "Employee can read own department data" if {
+    input.user.role == "employee"
+    input.action == "read"
+    same_department
+}`
+    };
+
+    function loadTemplate(name) {
+        if (document.getElementById('policy_code').value && 
+            !confirm('This will replace the current policy code. Continue?')) {
+            return;
+        }
+        document.getElementById('policy_code').value = templates[name];
+    }
+
+    document.getElementById('policyForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const token = getToken();
+        if (!token) {
+            alert('Please login first');
+            window.location.href = '/login';
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+        errorMessage.classList.add('hidden');
+
+        const formData = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value,
+            version: document.getElementById('version').value,
+            policy_code: document.getElementById('policy_code').value,
+            is_active: document.getElementById('is_active').checked
+        };
+
+        const isEdit = {{ 'true' if policy else 'false' }};
+        const policyId = {{ policy.id if policy else 'null' }};
+
+        try {
+            const url = isEdit ? `/policy/update/${policyId}` : '/policy/create';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                window.location.href = '/policies';
+            } else {
+                errorMessage.textContent = data.message || 'Failed to save policy';
+                errorMessage.classList.remove('hidden');
+            }
+        } catch (error) {
+            errorMessage.textContent = 'Network error. Please try again.';
+            errorMessage.classList.remove('hidden');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = isEdit ? 'Update Policy' : 'Create Policy';
+        }
+    });
+</script>
+{% endblock %}

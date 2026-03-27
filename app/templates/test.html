@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Test Policy - Policy-as-Code Platform{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">Policy Testing</h1>
+    <p class="text-gray-500 mt-1">Test authorization requests against your policies</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Test Form -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Authorization Request</h2>
+        
+        <form id="testForm" class="space-y-4">
+            <!-- User Selection -->
+            <div>
+                <label for="testUser" class="block text-sm font-medium text-gray-700 mb-1">Test as User</label>
+                <select id="testUser" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="">Login as a user first</option>
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Login to test with your credentials</p>
+            </div>
+
+            <!-- Action -->
+            <div>
+                <label for="action" class="block text-sm font-medium text-gray-700 mb-1">Action</label>
+                <select id="action" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="read">Read</option>
+                    <option value="write">Write</option>
+                    <option value="delete">Delete</option>
+                </select>
+            </div>
+
+            <!-- Resource Type -->
+            <div>
+                <label for="resourceType" class="block text-sm font-medium text-gray-700 mb-1">Resource Type</label>
+                <select id="resourceType" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="document">Document</option>
+                    <option value="report">Report</option>
+                    <option value="settings">Settings</option>
+                </select>
+            </div>
+
+            <!-- Resource Department -->
+            <div>
+                <label for="resourceDept" class="block text-sm font-medium text-gray-700 mb-1">Resource Department</label>
+                <select id="resourceDept" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                    <option value="">General (No specific department)</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="hr">HR</option>
+                    <option value="finance">Finance</option>
+                </select>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" id="testBtn"
+                class="w-full py-2 px-4 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700">
+                Evaluate Policy
+            </button>
+        </form>
+
+        <!-- Quick Tests -->
+        <div class="mt-6 pt-6 border-t border-gray-200">
+            <h3 class="text-sm font-medium text-gray-700 mb-3">Quick Test Scenarios</h3>
+            <div class="space-y-2">
+                <button onclick="quickTest('read', 'document', '')" 
+                    class="w-full text-left px-3 py-2 text-sm bg-gray-50 rounded hover:bg-gray-100">
+                    Read any document
+                </button>
+                <button onclick="quickTest('write', 'document', 'engineering')"
+                    class="w-full text-left px-3 py-2 text-sm bg-gray-50 rounded hover:bg-gray-100">
+                    Write to Engineering document
+                </button>
+                <button onclick="quickTest('read', 'settings', '')"
+                    class="w-full text-left px-3 py-2 text-sm bg-gray-50 rounded hover:bg-gray-100">
+                    Read settings (Admin only)
+                </button>
+                <button onclick="quickTest('delete', 'document', 'hr')"
+                    class="w-full text-left px-3 py-2 text-sm bg-gray-50 rounded hover:bg-gray-100">
+                    Delete HR document
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Policy Decision</h2>
+        
+        <div id="resultPlaceholder" class="text-center py-12">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <p class="text-gray-500">Submit a request to see the policy decision</p>
+        </div>
+
+        <div id="resultContainer" class="hidden">
+            <!-- Decision Badge -->
+            <div id="decisionBadge" class="text-center py-6 rounded-lg mb-6">
+                <span id="decisionText" class="text-3xl font-bold"></span>
+            </div>
+
+            <!-- Reason -->
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Reason</h3>
+                <p id="decisionReason" class="text-gray-900 bg-gray-50 p-3 rounded"></p>
+            </div>
+
+            <!-- Input Data -->
+            <div>
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Input Data Sent to OPA</h3>
+                <pre id="inputData" class="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-xs"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Authorization Flow -->
+<div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Authorization Flow</h2>
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span class="text-blue-600 font-bold">1</span>
+            </div>
+            <p class="text-sm text-gray-600">Client sends request<br>with JWT token</p>
+        </div>
+        <div class="text-gray-400">
+            <svg class="w-6 h-6 transform md:rotate-0 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+        </div>
+        <div class="text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span class="text-green-600 font-bold">2</span>
+            </div>
+            <p class="text-sm text-gray-600">Flask extracts user<br>attributes from JWT</p>
+        </div>
+        <div class="text-gray-400">
+            <svg class="w-6 h-6 transform md:rotate-0 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+        </div>
+        <div class="text-center">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span class="text-purple-600 font-bold">3</span>
+            </div>
+            <p class="text-sm text-gray-600">OPA evaluates<br>Rego policy</p>
+        </div>
+        <div class="text-gray-400">
+            <svg class="w-6 h-6 transform md:rotate-0 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+        </div>
+        <div class="text-center">
+            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                <span class="text-yellow-600 font-bold">4</span>
+            </div>
+            <p class="text-sm text-gray-600">Flask enforces<br>the decision</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Check if user is logged in
+    document.addEventListener('DOMContentLoaded', () => {
+        const user = getUser();
+        const testUserSelect = document.getElementById('testUser');
+        
+        if (user) {
+            testUserSelect.innerHTML = `<option value="${user.id}">${user.username} (${user.role} - ${user.department})</option>`;
+        } else {
+            testUserSelect.innerHTML = `<option value="">Please login first</option>`;
+        }
+    });
+
+    function quickTest(action, resourceType, resourceDept) {
+        document.getElementById('action').value = action;
+        document.getElementById('resourceType').value = resourceType;
+        document.getElementById('resourceDept').value = resourceDept;
+        document.getElementById('testForm').dispatchEvent(new Event('submit'));
+    }
+
+    document.getElementById('testForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const token = getToken();
+        if (!token) {
+            alert('Please login first to test policies');
+            window.location.href = '/login';
+            return;
+        }
+
+        const testBtn = document.getElementById('testBtn');
+        testBtn.disabled = true;
+        testBtn.textContent = 'Evaluating...';
+
+        const requestData = {
+            action: document.getElementById('action').value,
+            resource: {
+                type: document.getElementById('resourceType').value,
+                department: document.getElementById('resourceDept').value
+            }
+        };
+
+        try {
+            const response = await fetch('/policy/evaluate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            const data = await response.json();
+
+            // Hide placeholder, show result
+            document.getElementById('resultPlaceholder').classList.add('hidden');
+            document.getElementById('resultContainer').classList.remove('hidden');
+
+            // Update decision badge
+            const badge = document.getElementById('decisionBadge');
+            const text = document.getElementById('decisionText');
+            
+            if (data.data && data.data.allowed) {
+                badge.className = 'text-center py-6 rounded-lg mb-6 bg-green-100';
+                text.className = 'text-3xl font-bold text-green-600';
+                text.textContent = 'ALLOWED';
+            } else {
+                badge.className = 'text-center py-6 rounded-lg mb-6 bg-red-100';
+                text.className = 'text-3xl font-bold text-red-600';
+                text.textContent = 'DENIED';
+            }
+
+            // Update reason
+            document.getElementById('decisionReason').textContent = 
+                data.data?.reason || data.message || 'No reason provided';
+
+            // Update input data
+            document.getElementById('inputData').textContent = 
+                JSON.stringify(data.data?.input || requestData, null, 2);
+
+        } catch (error) {
+            alert('Error evaluating policy: ' + error.message);
+        } finally {
+            testBtn.disabled = false;
+            testBtn.textContent = 'Evaluate Policy';
+        }
+    });
+</script>
+{% endblock %}

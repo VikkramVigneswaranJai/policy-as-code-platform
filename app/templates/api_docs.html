@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation - Policy-as-Code Platform{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900">API Documentation</h1>
+    <p class="text-gray-500 mt-1">Complete reference for all REST API endpoints</p>
+</div>
+
+<!-- Base URL -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-2">Base URL</h2>
+    <code class="bg-gray-100 px-3 py-2 rounded text-sm">http://localhost:5000</code>
+</div>
+
+<!-- Authentication -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Authentication</h2>
+    <p class="text-gray-600 mb-4">
+        All protected endpoints require a JWT token in the Authorization header:
+    </p>
+    <code class="bg-gray-900 text-green-400 px-4 py-2 rounded block text-sm">
+        Authorization: Bearer &lt;your_jwt_token&gt;
+    </code>
+</div>
+
+<!-- Endpoints -->
+<div class="space-y-6">
+    <!-- Auth Endpoints -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-blue-50 px-6 py-3 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-blue-800">Authentication Endpoints</h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            <!-- Register -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-green-100 text-green-800 mr-3">POST</span>
+                    <code class="text-sm font-medium">/auth/register</code>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Register a new user account</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request
+curl -X POST http://localhost:5000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "newuser",
+    "email": "newuser@example.com",
+    "password": "password123",
+    "role": "employee",
+    "department": "engineering"
+  }'
+
+# Response
+{
+  "status": "success",
+  "message": "User registered successfully",
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "newuser",
+      "email": "newuser@example.com",
+      "role": "employee",
+      "department": "engineering"
+    }
+  }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Login -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-green-100 text-green-800 mr-3">POST</span>
+                    <code class="text-sm font-medium">/auth/login</code>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Authenticate and get JWT token</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request
+curl -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123"
+  }'
+
+# Response
+{
+  "status": "success",
+  "message": "Login successful",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIs...",
+    "token_type": "Bearer",
+    "user": {
+      "id": 1,
+      "username": "admin",
+      "role": "admin",
+      "department": "management"
+    }
+  }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-blue-100 text-blue-800 mr-3">GET</span>
+                    <code class="text-sm font-medium">/auth/profile</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Auth Required</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Get current user profile</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request
+curl http://localhost:5000/auth/profile \
+  -H "Authorization: Bearer YOUR_TOKEN"</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy Endpoints -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-purple-50 px-6 py-3 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-purple-800">Policy Endpoints</h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            <!-- Evaluate -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-green-100 text-green-800 mr-3">POST</span>
+                    <code class="text-sm font-medium">/policy/evaluate</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Auth Required</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Evaluate an authorization request against OPA policies</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request
+curl -X POST http://localhost:5000/policy/evaluate \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "read",
+    "resource": {
+      "type": "document",
+      "department": "engineering"
+    }
+  }'
+
+# Response (Allowed)
+{
+  "status": "success",
+  "data": {
+    "decision": "allow",
+    "allowed": true,
+    "reason": "Admin has full access to all resources",
+    "input": {
+      "user": {"role": "admin", "department": "management"},
+      "action": "read",
+      "resource": {"type": "document", "department": "engineering"}
+    }
+  }
+}
+
+# Response (Denied)
+{
+  "status": "success",
+  "data": {
+    "decision": "deny",
+    "allowed": false,
+    "reason": "Employee cannot access other department data"
+  }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- List Policies -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-blue-100 text-blue-800 mr-3">GET</span>
+                    <code class="text-sm font-medium">/policy/list</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Auth Required</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">List all policies</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request
+curl http://localhost:5000/policy/list \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Optional: Filter by status
+curl "http://localhost:5000/policy/list?status=active" \
+  -H "Authorization: Bearer YOUR_TOKEN"</code></pre>
+                </div>
+            </div>
+
+            <!-- Create Policy -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-green-100 text-green-800 mr-3">POST</span>
+                    <code class="text-sm font-medium">/policy/create</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-red-100 text-red-800">Admin Only</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Create a new Rego policy</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request
+curl -X POST http://localhost:5000/policy/create \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "custom_policy",
+    "description": "Custom access control policy",
+    "version": "1.0.0",
+    "policy_code": "package authz\ndefault allow := false\nallow { input.user.role == \"admin\" }",
+    "is_active": true
+  }'</code></pre>
+                </div>
+            </div>
+
+            <!-- Update Policy -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-yellow-100 text-yellow-800 mr-3">PUT</span>
+                    <code class="text-sm font-medium">/policy/update/&lt;id&gt;</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-red-100 text-red-800">Admin Only</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Update an existing policy</p>
+            </div>
+
+            <!-- Toggle Policy -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-yellow-100 text-yellow-800 mr-3">PUT</span>
+                    <code class="text-sm font-medium">/policy/toggle/&lt;id&gt;</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-red-100 text-red-800">Admin Only</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Enable or disable a policy</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Endpoints -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-green-50 px-6 py-3 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-green-800">Protected Resource Endpoints</h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            <!-- Get Data -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-blue-100 text-blue-800 mr-3">GET</span>
+                    <code class="text-sm font-medium">/resource/data</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Auth + Policy</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Get protected data (authorization enforced)</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request
+curl "http://localhost:5000/resource/data?type=document&department=engineering" \
+  -H "Authorization: Bearer YOUR_TOKEN"</code></pre>
+                </div>
+            </div>
+
+            <!-- Documents -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-blue-100 text-blue-800 mr-3">GET</span>
+                    <code class="text-sm font-medium">/resource/documents</code>
+                </div>
+                <p class="text-gray-600 text-sm">Get department documents</p>
+            </div>
+
+            <!-- Reports -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-blue-100 text-blue-800 mr-3">GET</span>
+                    <code class="text-sm font-medium">/resource/reports</code>
+                </div>
+                <p class="text-gray-600 text-sm">Get reports (sensitive reports require elevated access)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Endpoints -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-yellow-50 px-6 py-3 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-yellow-800">Audit Endpoints</h2>
+        </div>
+        <div class="divide-y divide-gray-200">
+            <!-- Get Logs -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-blue-100 text-blue-800 mr-3">GET</span>
+                    <code class="text-sm font-medium">/audit/logs</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Auth Required</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Get authorization audit logs (paginated)</p>
+                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                    <pre class="text-green-400 text-xs"><code># Request with filters
+curl "http://localhost:5000/audit/logs?page=1&per_page=20&decision=deny&action=write" \
+  -H "Authorization: Bearer YOUR_TOKEN"</code></pre>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="p-6">
+                <div class="flex items-center mb-2">
+                    <span class="px-2 py-1 text-xs font-bold rounded bg-blue-100 text-blue-800 mr-3">GET</span>
+                    <code class="text-sm font-medium">/audit/stats</code>
+                    <span class="ml-2 px-2 py-1 text-xs rounded bg-red-100 text-red-800">Admin Only</span>
+                </div>
+                <p class="text-gray-600 text-sm">Get authorization statistics</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Responses -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Error Responses</h2>
+    <div class="space-y-4">
+        <div class="flex items-start">
+            <span class="px-2 py-1 text-xs font-bold rounded bg-red-100 text-red-800 mr-3">400</span>
+            <div>
+                <p class="font-medium text-gray-900">Bad Request</p>
+                <p class="text-sm text-gray-600">Invalid request body or missing required fields</p>
+            </div>
+        </div>
+        <div class="flex items-start">
+            <span class="px-2 py-1 text-xs font-bold rounded bg-red-100 text-red-800 mr-3">401</span>
+            <div>
+                <p class="font-medium text-gray-900">Unauthorized</p>
+                <p class="text-sm text-gray-600">Missing or invalid JWT token</p>
+            </div>
+        </div>
+        <div class="flex items-start">
+            <span class="px-2 py-1 text-xs font-bold rounded bg-red-100 text-red-800 mr-3">403</span>
+            <div>
+                <p class="font-medium text-gray-900">Forbidden</p>
+                <p class="text-sm text-gray-600">Policy evaluation denied access</p>
+            </div>
+        </div>
+        <div class="flex items-start">
+            <span class="px-2 py-1 text-xs font-bold rounded bg-red-100 text-red-800 mr-3">404</span>
+            <div>
+                <p class="font-medium text-gray-900">Not Found</p>
+                <p class="text-sm text-gray-600">Resource not found</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

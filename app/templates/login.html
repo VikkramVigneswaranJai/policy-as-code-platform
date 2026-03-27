@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Policy-as-Code Platform{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex">
+    <!-- Left Side - Branding -->
+    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 p-12 flex-col justify-between relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-20 left-20 w-32 h-32 bg-white rounded-full"></div>
+            <div class="absolute bottom-20 right-20 w-24 h-24 bg-white rounded-full"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-white rounded-full"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="relative z-10">
+            <div class="flex items-center space-x-4 mb-8">
+                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Policy-as-Code</h1>
+                    <p class="text-primary-100">Platform</p>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-4xl font-bold text-white mb-4">Secure Access Control</h2>
+                <p class="text-primary-100 text-lg leading-relaxed">
+                    Manage and enforce authorization policies with confidence using our enterprise-grade policy engine.
+                </p>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="relative z-10 grid grid-cols-1 gap-4">
+            <div class="flex items-center space-x-3 text-white/90">
+                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-lock text-sm"></i>
+                </div>
+                <span class="text-sm">Role-based access control</span>
+            </div>
+            <div class="flex items-center space-x-3 text-white/90">
+                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-clock text-sm"></i>
+                </div>
+                <span class="text-sm">Real-time policy evaluation</span>
+            </div>
+            <div class="flex items-center space-x-3 text-white/90">
+                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-history text-sm"></i>
+                </div>
+                <span class="text-sm">Comprehensive audit logging</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side - Login Form -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-secondary-50">
+        <div class="w-full max-w-md">
+            <!-- Mobile Header -->
+            <div class="lg:hidden text-center mb-8">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-shield-alt text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">Policy-as-Code</h1>
+                        <p class="text-xs text-secondary-500">Platform</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Card -->
+            <div class="bg-white rounded-2xl shadow-card border border-secondary-200 p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-secondary-900 mb-2">Welcome Back</h2>
+                    <p class="text-secondary-600">Sign in to access your dashboard</p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm animate-slide-up">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+
+                <!-- Success Message -->
+                <div id="successMessage" class="hidden mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm animate-slide-up">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                        <span id="successText"></span>
+                    </div>
+                </div>
+
+                <form id="loginForm" class="space-y-6">
+                    <!-- Username Field -->
+                    <div class="relative">
+                        <label for="username" class="block text-sm font-semibold text-secondary-700 mb-2">
+                            <i class="fas fa-user mr-2 text-primary-500"></i>Username
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="username" name="username" required
+                                class="w-full px-4 py-3 pl-12 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-secondary-50 focus:bg-white"
+                                placeholder="Enter your username">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-secondary-400"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="relative">
+                        <label for="password" class="block text-sm font-semibold text-secondary-700 mb-2">
+                            <i class="fas fa-lock mr-2 text-primary-500"></i>Password
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" required
+                                class="w-full px-4 py-3 pl-12 pr-12 border border-secondary-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-secondary-50 focus:bg-white"
+                                placeholder="Enter your password">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-secondary-400"></i>
+                            </div>
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-400 hover:text-secondary-600 transition-colors">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="remember" class="w-4 h-4 text-primary-600 bg-secondary-100 border-secondary-300 rounded focus:ring-primary-500 focus:ring-2">
+                            <span class="ml-2 text-sm text-secondary-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submitBtn"
+                        class="w-full py-3 px-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transform hover:-translate-y-0.5 transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <span id="buttonText" class="flex items-center justify-center">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Sign In
+                        </span>
+                        <span id="loadingText" class="hidden flex items-center justify-center">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Signing in...
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Register Link -->
+                <div class="mt-8 text-center">
+                    <p class="text-secondary-600">
+                        Don't have an account?
+                        <a href="/register" class="text-primary-600 hover:text-primary-700 font-semibold transition-colors">
+                            Create one here
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Demo Credentials -->
+                <div class="mt-6 p-4 bg-secondary-50 rounded-xl border border-secondary-200">
+                    <p class="text-xs text-secondary-500 mb-2 font-medium">Demo Credentials:</p>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <span class="font-medium text-secondary-700">Admin:</span>
+                            <div class="text-secondary-600">admin / admin123</div>
+                        </div>
+                        <div>
+                            <span class="font-medium text-secondary-700">User:</span>
+                            <div class="text-secondary-600">user / user123</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Password toggle functionality
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            const icon = togglePassword.querySelector('i');
+            icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+        });
+
+        // Load saved credentials if remember me was checked
+        const rememberCheckbox = document.getElementById('remember');
+        const usernameInput = document.getElementById('username');
+
+        if (localStorage.getItem('pac_remember_username')) {
+            usernameInput.value = localStorage.getItem('pac_remember_username');
+            rememberCheckbox.checked = true;
+        }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('submitBtn');
+        const buttonText = document.getElementById('buttonText');
+        const loadingText = document.getElementById('loadingText');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const errorText = document.getElementById('errorText');
+        const successText = document.getElementById('successText');
+        const rememberCheckbox = document.getElementById('remember');
+        const usernameInput = document.getElementById('username');
+
+        // Hide messages
+        errorMessage.classList.add('hidden');
+        successMessage.classList.add('hidden');
+
+        // Show loading state
+        submitBtn.disabled = true;
+        buttonText.classList.add('hidden');
+        loadingText.classList.remove('hidden');
+
+        const username = usernameInput.value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                // Store token and user info
+                setToken(data.data.access_token);
+                setUser(data.data.user);
+
+                // Remember username if checkbox is checked
+                if (rememberCheckbox.checked) {
+                    localStorage.setItem('pac_remember_username', username);
+                } else {
+                    localStorage.removeItem('pac_remember_username');
+                }
+
+                // Show success message
+                successText.textContent = 'Login successful! Redirecting...';
+                successMessage.classList.remove('hidden');
+
+                // Redirect to dashboard after a short delay
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } else {
+                errorText.textContent = data.message || 'Login failed. Please check your credentials.';
+                errorMessage.classList.remove('hidden');
+            }
+        } catch (error) {
+            errorText.textContent = 'Network error. Please check your connection and try again.';
+            errorMessage.classList.remove('hidden');
+        } finally {
+            // Reset button state
+            submitBtn.disabled = false;
+            buttonText.classList.remove('hidden');
+            loadingText.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock %}

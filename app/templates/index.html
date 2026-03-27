@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Policy-as-Code Platform - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="text-center py-16">
+    <h1 class="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
+        Policy-as-Code
+        <span class="text-primary-600">Platform</span>
+    </h1>
+    <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-500">
+        A scalable and flexible authorization system using Open Policy Agent (OPA) 
+        to externalize access control rules as code.
+    </p>
+    <div class="mt-10 flex justify-center space-x-4">
+        <a href="/dashboard" class="px-8 py-3 text-base font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 shadow-sm">
+            Go to Dashboard
+        </a>
+        <a href="/api-docs" class="px-8 py-3 text-base font-medium text-primary-600 bg-white border border-primary-600 rounded-md hover:bg-primary-50">
+            View API Docs
+        </a>
+    </div>
+</div>
+
+<!-- Features Grid -->
+<div class="py-12">
+    <h2 class="text-2xl font-bold text-gray-900 text-center mb-10">Key Features</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Policy-as-Code</h3>
+            <p class="text-gray-600">
+                Define authorization rules in Rego language. Policies are versioned, 
+                testable, and can be updated without application redeployment.
+            </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Attribute-Based Access Control</h3>
+            <p class="text-gray-600">
+                ABAC model supports user roles, departments, time-based rules, 
+                and resource attributes for fine-grained access control.
+            </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Centralized Policy Engine</h3>
+            <p class="text-gray-600">
+                Open Policy Agent (OPA) serves as a dedicated decision engine, 
+                separating authorization logic from application code.
+            </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">JWT Authentication</h3>
+            <p class="text-gray-600">
+                Secure token-based authentication with bcrypt password hashing. 
+                User attributes embedded in JWT for policy evaluation.
+            </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Audit Logging</h3>
+            <p class="text-gray-600">
+                Complete audit trail of all authorization decisions for 
+                compliance, debugging, and security analysis.
+            </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Dynamic Policy Updates</h3>
+            <p class="text-gray-600">
+                Update, enable, or disable policies at runtime without 
+                restarting the application. Changes take effect immediately.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Architecture Diagram -->
+<div class="py-12">
+    <h2 class="text-2xl font-bold text-gray-900 text-center mb-10">System Architecture</h2>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div class="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-y-0 lg:space-x-8">
+            <!-- Client -->
+            <div class="text-center">
+                <div class="w-24 h-24 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <p class="font-medium">Client</p>
+                <p class="text-sm text-gray-500">Web/Mobile App</p>
+            </div>
+
+            <!-- Arrow -->
+            <div class="text-gray-400 transform lg:rotate-0 rotate-90">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </div>
+
+            <!-- Flask API -->
+            <div class="text-center">
+                <div class="w-24 h-24 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
+                    </svg>
+                </div>
+                <p class="font-medium">Flask API</p>
+                <p class="text-sm text-gray-500">Backend + JWT Auth</p>
+            </div>
+
+            <!-- Arrow -->
+            <div class="text-gray-400 transform lg:rotate-0 rotate-90">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </div>
+
+            <!-- OPA -->
+            <div class="text-center">
+                <div class="w-24 h-24 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <p class="font-medium">OPA Engine</p>
+                <p class="text-sm text-gray-500">Policy Evaluation</p>
+            </div>
+
+            <!-- Arrow -->
+            <div class="text-gray-400 transform lg:rotate-0 rotate-90">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </div>
+
+            <!-- Database -->
+            <div class="text-center">
+                <div class="w-24 h-24 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+                    </svg>
+                </div>
+                <p class="font-medium">SQLite DB</p>
+                <p class="text-sm text-gray-500">Data Storage</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Start -->
+<div class="py-12">
+    <h2 class="text-2xl font-bold text-gray-900 text-center mb-10">Quick Start</h2>
+    <div class="bg-gray-900 rounded-lg p-6 overflow-x-auto">
+        <pre class="text-green-400 text-sm"><code># 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Initialize the database with sample data
+python init_db.py
+
+# 3. Start the Flask application
+python run.py
+
+# 4. (Optional) Start OPA server for full functionality
+opa run --server opa_policies/
+
+# 5. Access the dashboard
+# Open http://localhost:5000 in your browser</code></pre>
+    </div>
+</div>
+{% endblock %}
