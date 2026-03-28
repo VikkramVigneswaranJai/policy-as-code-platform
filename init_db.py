@@ -212,6 +212,40 @@ reason := "Access denied: Outside allowed time window" if { not allow }
     }
 ]
 
+SAMPLE_USERS = [
+    {
+        'username': 'velsabrinaath',
+        'email': 'vels@example.com',
+        'password': 'employee123',
+        'role': 'employee',
+        'department': 'operations',
+        'designation': 'software engineer'
+    },
+    {
+        'username': 'velmurugan',
+        'email': 'velm@example.com',
+        'password': 'manager123',
+        'role': 'manager',
+        'department': 'engineering',
+        'designation': 'Engineering Manager'
+    },
+    {
+        'username': 'sriharan',
+        'email': 'sri@example.com',
+        'password': 'employee123',
+        'role': 'employee',
+        'department': 'engineering',
+        'designation': 'Software Engineer'
+    },
+    {
+        'username': 'vikkramvigneswarankj',
+        'email': 'vikkram@example.com',
+        'password': 'admin123',
+        'role': 'admin',
+        'department': 'management',
+        'designation': 'Administrator'
+    }
+]
 
 
 def init_database():
@@ -247,7 +281,8 @@ def init_database():
                 email=user_data['email'],
                 role=user_data['role'],
                 department=user_data['department'],
-                designation=user_data['designation']
+                designation=user_data['designation'],
+                is_active=user_data.get('is_active', True)
             )
             user.set_password(user_data['password'])
             db.session.add(user)

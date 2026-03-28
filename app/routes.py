@@ -34,6 +34,21 @@ def admin_required(f):
     return decorated_function
 
 
+def login_required(f):
+    """
+    Decorator to require login for web routes.
+    Redirects to the homepage if the user is not authenticated.
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            verify_jwt_in_request(locations=['cookies', 'headers'])
+        except Exception:
+            return redirect(url_for('main.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @main_bp.route('/', methods=['GET'])
 def index():
     """
@@ -65,6 +80,7 @@ def register_page():
 
 
 @main_bp.route('/dashboard', methods=['GET'])
+@login_required
 def dashboard():
     """
     Admin Dashboard
@@ -96,6 +112,7 @@ def dashboard():
 
 
 @main_bp.route('/policies', methods=['GET'])
+@login_required
 def policies_page():
     """
     Policies Management Page
@@ -107,6 +124,7 @@ def policies_page():
 
 
 @main_bp.route('/policies/new', methods=['GET'])
+@login_required
 def new_policy_page():
     """
     New Policy Creation Page
@@ -117,6 +135,7 @@ def new_policy_page():
 
 
 @main_bp.route('/policies/edit/<int:policy_id>', methods=['GET'])
+@login_required
 def edit_policy_page(policy_id):
     """
     Edit Policy Page
@@ -131,20 +150,16 @@ from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 
 
 @main_bp.route('/users', methods=['GET'])
+@login_required
 def users_page():
     users = User.query.order_by(User.created_at.desc()).all()
 
-    current_username = None
+    current_username = get_jwt_identity()
     current_user_role = None
-    try:
-        verify_jwt_in_request(locations=['cookies', 'headers'])  # 👈 ADD HERE
-        current_username = get_jwt_identity()
-        current_user = User.query.filter_by(username=current_username).first()
-        if current_user:
-            current_user_role = current_user.role
-        logging.info(f"JWT USER: {current_username}")
-    except Exception as e:
-        logging.error(f"JWT ERROR: {e}")
+    current_user = User.query.filter_by(username=current_username).first()
+    if current_user:
+        current_user_role = current_user.role
+    logging.info(f"JWT USER: {current_username}")
 
     return render_template(
         'users.html',
@@ -166,6 +181,7 @@ def delete_user(user_id):
     return redirect(url_for('main.users_page'))
 
 @main_bp.route('/audit', methods=['GET'])
+@login_required
 def audit_page():
     """
     Audit Logs Page

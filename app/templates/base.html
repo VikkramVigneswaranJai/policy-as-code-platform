@@ -123,27 +123,27 @@
                     </a>
                     <!-- Desktop Navigation -->
                     <div class="hidden md:flex ml-12 space-x-1">
-                        <a href="/dashboard" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                        <a href="/dashboard" class="nav-link auth-only hidden px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
                         </a>
-                        <a href="/policies" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                        <a href="/policies" class="nav-link auth-only hidden px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
                             <i class="fas fa-file-contract"></i>
                             <span>Policies</span>
                         </a>
-                        <a href="/users" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                        <a href="/users" class="nav-link auth-only hidden px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
                             <i class="fas fa-users"></i>
                             <span>Users</span>
                         </a>
-                        <a href="/audit" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                        <a href="/audit" class="nav-link auth-only hidden px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
                             <i class="fas fa-history"></i>
                             <span>Audit Logs</span>
                         </a>
-                        <a href="/test" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                        <a href="/test" class="nav-link auth-only hidden px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
                             <i class="fas fa-flask"></i>
                             <span>Test Policy</span>
                         </a>
-                        <a href="/api-docs" class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
+                        <a href="/api-docs" class="nav-link auth-only hidden px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 flex items-center space-x-2">
                             <i class="fas fa-code"></i>
                             <span>API Docs</span>
                         </a>
@@ -188,27 +188,27 @@
 
             <!-- Mobile Navigation -->
             <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-1">
-                <a href="/dashboard" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                <a href="/dashboard" class="auth-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/policies" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                <a href="/policies" class="auth-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
                     <i class="fas fa-file-contract"></i>
                     <span>Policies</span>
                 </a>
-                <a href="/users" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                <a href="/users" class="auth-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
                     <i class="fas fa-users"></i>
                     <span>Users</span>
                 </a>
-                <a href="/audit" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                <a href="/audit" class="auth-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
                     <i class="fas fa-history"></i>
                     <span>Audit Logs</span>
                 </a>
-                <a href="/test" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                <a href="/test" class="auth-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
                     <i class="fas fa-flask"></i>
                     <span>Test Policy</span>
                 </a>
-                <a href="/api-docs" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
+                <a href="/api-docs" class="auth-only hidden flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200">
                     <i class="fas fa-code"></i>
                     <span>API Docs</span>
                 </a>
@@ -273,10 +273,10 @@
                 <div>
                     <h3 class="text-sm font-semibold text-secondary-900 mb-4">Quick Links</h3>
                     <ul class="space-y-2">
-                        <li><a href="/dashboard" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Dashboard</a></li>
-                        <li><a href="/policies" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Policies</a></li>
-                        <li><a href="/users" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">User Management</a></li>
-                        <li><a href="/audit" class="text-secondary-600 hover:text-primary-600 text-sm transition-colors">Audit Logs</a></li>
+                        <li><a href="/dashboard" class="auth-only hidden text-secondary-600 hover:text-primary-600 text-sm transition-colors">Dashboard</a></li>
+                        <li><a href="/policies" class="auth-only hidden text-secondary-600 hover:text-primary-600 text-sm transition-colors">Policies</a></li>
+                        <li><a href="/users" class="auth-only hidden text-secondary-600 hover:text-primary-600 text-sm transition-colors">User Management</a></li>
+                        <li><a href="/audit" class="auth-only hidden text-secondary-600 hover:text-primary-600 text-sm transition-colors">Audit Logs</a></li>
                     </ul>
                 </div>
 
@@ -406,14 +406,28 @@
             const authButtons = document.getElementById('auth-buttons');
             const userInfo = document.getElementById('user-info');
             const userName = document.getElementById('user-name');
+            const authLinks = document.querySelectorAll('.auth-only');
             
             if (user) {
                 authButtons.classList.add('hidden');
                 userInfo.classList.remove('hidden');
+                authLinks.forEach(link => link.classList.remove('hidden'));
                 userName.textContent = `${user.username} (${user.role})`;
             } else {
                 authButtons.classList.remove('hidden');
                 userInfo.classList.add('hidden');
+                authLinks.forEach(link => link.classList.add('hidden'));
+            }
+
+            const homeCTA = document.getElementById('home-cta');
+            if (homeCTA) {
+                if (user) {
+                    homeCTA.href = '/dashboard';
+                    homeCTA.textContent = 'Go to Dashboard';
+                } else {
+                    homeCTA.href = '/login';
+                    homeCTA.textContent = 'Login to Access Dashboard';
+                }
             }
         }
 
