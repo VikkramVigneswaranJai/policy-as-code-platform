@@ -98,11 +98,147 @@
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
+        /* Placeholder styling */
+        input::placeholder,
+        textarea::placeholder,
+        select::placeholder {
+            color: #6b7280;
+            opacity: 1;
+        }
+
+        body.dark input::placeholder,
+        body.dark textarea::placeholder,
+        body.dark select::placeholder {
+            color: rgba(203, 213, 225, 0.75);
+        }
+
+        /* Confirm logout modal */
+        #logout-confirm-modal {
+            display: none;
+        }
+        #logout-confirm-modal.active {
+            display: flex;
+        }
+        #logout-confirm-modal .modal-panel {
+            width: min(100%, 420px);
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+        body.dark #logout-confirm-modal .modal-panel {
+            background: rgba(15, 23, 42, 0.96);
+            border-color: rgba(71, 85, 105, 0.6);
+        }
+
         /* Custom shadows */
         .shadow-soft { box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08); }
         .shadow-card { box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1); }
         .shadow-hover { transition: box-shadow 0.3s ease; }
         .shadow-hover:hover { box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15); }
+
+        /* Dark mode overrides */
+        body.dark {
+            background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+            color: #e2e8f0;
+        }
+        body.dark nav,
+        body.dark footer,
+        body.dark .bg-white\/80,
+        body.dark .bg-secondary-50,
+        body.dark .bg-secondary-100,
+        body.dark .bg-secondary-200,
+        body.dark .bg-primary-50,
+        body.dark .bg-primary-100,
+        body.dark .bg-white,
+        body.dark .bg-white\/10,
+        body.dark .bg-white\/20,
+        body.dark .bg-gray-50,
+        body.dark .bg-gray-100,
+        body.dark .bg-gray-200,
+        body.dark .bg-gray-300,
+        body.dark .bg-gray-400 {
+            background-color: rgba(15, 23, 42, 0.92) !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+        body.dark .bg-secondary-50 { background-color: #1f2937 !important; }
+        body.dark .bg-secondary-100 { background-color: #111827 !important; }
+        body.dark .bg-secondary-200 { background-color: #151f2f !important; }
+        body.dark .bg-primary-50 { background-color: #112d4b !important; }
+        body.dark .bg-primary-100 { background-color: #0f172a !important; }
+        body.dark .bg-white\/10 { background-color: rgba(255, 255, 255, 0.08) !important; }
+        body.dark .bg-white\/20 { background-color: rgba(255, 255, 255, 0.12) !important; }
+        body.dark .bg-gray-50 { background-color: #111827 !important; }
+        body.dark .bg-gray-100 { background-color: #1f2937 !important; }
+        body.dark .bg-gray-200 { background-color: #111827 !important; }
+        body.dark .bg-gray-300 { background-color: #1e293b !important; }
+        body.dark .bg-gray-400 { background-color: #334155 !important; }
+        body.dark input[type="text"],
+        body.dark input[type="password"],
+        body.dark input[type="email"],
+        body.dark input[type="search"],
+        body.dark input[type="tel"],
+        body.dark input[type="url"],
+        body.dark input[type="number"],
+        body.dark input[type="date"],
+        body.dark input[type="datetime-local"],
+        body.dark input[type="month"],
+        body.dark input[type="week"],
+        body.dark input[type="time"],
+        body.dark textarea,
+        body.dark select {
+            background-color: #0f172a !important;
+            color: #e2e8f0 !important;
+            border-color: #475569 !important;
+        }
+        body.dark input[type="text"]::placeholder,
+        body.dark input[type="password"]::placeholder,
+        body.dark input[type="email"]::placeholder,
+        body.dark input[type="search"]::placeholder,
+        body.dark input[type="tel"]::placeholder,
+        body.dark input[type="url"]::placeholder,
+        body.dark input[type="number"]::placeholder,
+        body.dark input[type="date"]::placeholder,
+        body.dark input[type="datetime-local"]::placeholder,
+        body.dark input[type="month"]::placeholder,
+        body.dark input[type="week"]::placeholder,
+        body.dark input[type="time"]::placeholder,
+        body.dark textarea::placeholder,
+        body.dark select::placeholder {
+            color: rgba(203, 213, 225, 0.75) !important;
+        }
+        body.dark .text-black,
+        body.dark .text-gray-900,
+        body.dark .text-gray-800,
+        body.dark .text-gray-700,
+        body.dark .text-secondary-600,
+        body.dark .text-secondary-500,
+        body.dark .text-secondary-700,
+        body.dark .text-secondary-900,
+        body.dark .text-gray-500,
+        body.dark .text-gray-600 {
+            color: #e2e8f0 !important;
+        }
+        body.dark .text-primary-600,
+        body.dark .text-primary-700,
+        body.dark .text-primary-800 {
+            color: #93c5fd !important;
+        }
+        body.dark .border-secondary-200,
+        body.dark .border-secondary-300,
+        body.dark .border-secondary-400,
+        body.dark .border-gray-200,
+        body.dark .border-gray-300 {
+            border-color: #475569 !important;
+        }
+        body.dark .divide-secondary-100,
+        body.dark .divide-gray-200 {
+            border-color: #475569 !important;
+        }
+        body.dark .shadow-soft { box-shadow: 0 2px 15px rgba(255, 255, 255, 0.08); }
+        body.dark .bg-green-50 { background-color: #163f2d !important; }
+        body.dark .bg-red-50 { background-color: #4c1d1d !important; }
+        body.dark .hover\:bg-secondary-50:hover { background-color: #1f2937 !important; }
+        body.dark .hover\:bg-primary-50:hover { background-color: #112d4b !important; }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -156,6 +292,10 @@
                         <span id="opa-text">Checking OPA...</span>
                     </div>
 
+                    <button id="theme-toggle-btn" class="p-2 rounded-lg text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-colors" aria-label="Toggle dark mode" title="Toggle dark mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
                     <!-- Auth Buttons -->
                     <div id="auth-buttons" class="flex items-center space-x-3">
                         <a href="/login" class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-lg hover:from-primary-700 hover:to-primary-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
@@ -178,7 +318,6 @@
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </button>
                     </div>
-
                     <!-- Mobile menu button -->
                     <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-secondary-600 hover:text-primary-600 hover:bg-primary-50 transition-colors">
                         <i class="fas fa-bars"></i>
@@ -317,6 +456,18 @@
         </div>
     </footer>
 
+    <!-- Logout confirmation modal -->
+    <div id="logout-confirm-modal" class="fixed inset-0 z-50 items-center justify-center bg-black/50 p-4">
+        <div class="modal-panel rounded-3xl p-6 shadow-2xl">
+            <h2 class="text-xl font-semibold text-gray-900 mb-3">Confirm logout</h2>
+            <p class="text-sm text-gray-600 mb-6">Are you sure you want to logout? Your session will end and you will be redirected to the login page.</p>
+            <div class="flex flex-col sm:flex-row justify-end gap-3">
+                <button type="button" onclick="hideLogoutConfirm()" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">Cancel</button>
+                <button type="button" onclick="confirmLogout()" class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors">Logout</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
         // Store JWT token in localStorage
@@ -341,9 +492,60 @@
         }
 
         function logout() {
+            showLogoutConfirm();
+        }
+
+        function showLogoutConfirm() {
+            const modal = document.getElementById('logout-confirm-modal');
+            if (modal) modal.classList.add('active');
+        }
+
+        function hideLogoutConfirm() {
+            const modal = document.getElementById('logout-confirm-modal');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function confirmLogout() {
+            hideLogoutConfirm();
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);
             window.location.href = '/login';
+        }
+
+        const THEME_KEY = 'pac_theme';
+
+        function applyTheme(theme) {
+            const body = document.body;
+            const toggle = document.getElementById('theme-toggle-btn');
+
+            if (theme === 'dark') {
+                body.classList.add('dark');
+                if (toggle) {
+                    toggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    toggle.setAttribute('aria-label', 'Switch to light mode');
+                    toggle.title = 'Switch to light mode';
+                }
+            } else {
+                body.classList.remove('dark');
+                if (toggle) {
+                    toggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    toggle.setAttribute('aria-label', 'Switch to dark mode');
+                    toggle.title = 'Switch to dark mode';
+                }
+            }
+            localStorage.setItem(THEME_KEY, theme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            applyTheme(theme);
+        }
+
+        function toggleTheme() {
+            const nextTheme = document.body.classList.contains('dark') ? 'light' : 'dark';
+            applyTheme(nextTheme);
         }
 
         // API helper function
@@ -434,6 +636,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkOPAStatus();
             updateAuthUI();
+            loadTheme();
+
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', toggleTheme);
+            }
 
             // Mobile menu toggle
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
