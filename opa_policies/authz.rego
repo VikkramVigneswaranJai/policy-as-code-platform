@@ -70,7 +70,19 @@ reason := "Manager access granted: write allowed during office hours for departm
 reason := "Manager access denied: write only allowed during office hours, delete not permitted" if {
     is_manager
     input.action in ["write", "delete"]
-    not (input.action == "write" and is_office_hours and can_access_department)
+    not input.action == "write"
+}
+
+reason := "Manager access denied: write only allowed during office hours, delete not permitted" if {
+    is_manager
+    input.action == "write"
+    not is_office_hours
+}
+
+reason := "Manager access denied: write only allowed during office hours, delete not permitted" if {
+    is_manager
+    input.action == "write"
+    not can_access_department
 }
 
 reason := "Manager access denied: Cannot access other department resources" if {

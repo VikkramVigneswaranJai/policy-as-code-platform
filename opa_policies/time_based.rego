@@ -93,8 +93,19 @@ reason := "Manager access granted: write allowed weekdays before 6 PM" if {
 
 reason := "Manager access denied: no write on weekends or after 6 PM, delete never allowed" if {
     input.user.role == "manager"
-    input.action in ["write", "delete"]
-    not (is_weekday and is_before_six)
+    input.action == "delete"
+}
+
+reason := "Manager access denied: no write on weekends or after 6 PM, delete never allowed" if {
+    input.user.role == "manager"
+    input.action == "write"
+    not is_weekday
+}
+
+reason := "Manager access denied: no write on weekends or after 6 PM, delete never allowed" if {
+    input.user.role == "manager"
+    input.action == "write"
+    not is_before_six
 }
 
 reason := "Employee access granted: read only at any time" if {

@@ -16,13 +16,28 @@ import time
 import requests
 from pathlib import Path
 
+
+def get_opa_executable():
+    """Return the OPA executable path.
+
+    On Windows, prefer a local opa.exe in the project root if available.
+    Otherwise, use the system PATH executable name.
+    """
+    if sys.platform == 'win32':
+        local_opa = Path(__file__).parent / 'opa.exe'
+        if local_opa.exists():
+            return str(local_opa)
+    return 'opa'
+
+
 def check_opa_installed():
-    """Check if OPA is installed and available in PATH."""
+    """Check if OPA is installed and available in PATH or locally."""
+    opa_executable = get_opa_executable()
     try:
-        result = subprocess.run(['opa', 'version'], 
-                              capture_output=True, 
-                              text=True, 
-                              timeout=5)
+        result = subprocess.run([opa_executable, 'version'],
+                                capture_output=True,
+                                text=True,
+                                timeout=5)
         if result.returncode == 0:
             print(f"✅ OPA is installed: {result.stdout.strip()}")
             return True
@@ -69,35 +84,38 @@ def start_opa_server(policy_dir):
     print(f"   Server URL: http://localhost:8181\n")
     
     try:
+        opa_executable = get_opa_executable()
+        if opa_executable != 'opa':
+            print(f"Using local OPA executable: {opa_executable}")
+
         # Start OPA server as a subprocess
         # --server: Run in server mode
         # --addr: Listen address
         # policy_dir: Directory containing .rego files
         process = subprocess.Popen(
-            ['opa', 'run', '--server', '--addr', 'localhost:8181', policy_dir],
+            [opa_executable, 'run', '--server', '--addr', 'localhost:8181', policy_dir],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform == 'win32' else 0
         )
         
-        # Wait a moment for server to start
-        time.sleep(2)
-        
-        # Check if server is running
-        try:
-            response = requests.get('http://localhost:8181/health', timeout=2)
-            if response.status_code == 200:
-                print("✅ OPA server started successfully!")
-                print("   Health check: PASSED")
-                return process
-            else:
+        # Wait for server to start and check health
+        for attempt in range(10):
+            try:
+                response = requests.get('http://localhost:8181/health', timeout=2)
+                if response.status_code == 200:
+                    print("✅ OPA server started successfully!")
+                    print("   Health check: PASSED")
+                    return process
                 print(f"⚠️  OPA server responded with status {response.status_code}")
                 return process
-        except requests.exceptions.ConnectionError:
-            print("⚠️  OPA server started but health check failed")
-            print("   The server may still be initializing...")
-            return process
+            except requests.exceptions.ConnectionError:
+                print(f"⏳ Waiting for OPA to initialize... (attempt {attempt + 1}/10)")
+                time.sleep(1)
+        print("⚠️  OPA server started but health check failed after several attempts.")
+        print("   The server may still be initializing or failed to bind.")
+        return process
             
     except FileNotFoundError:
         print("❌ OPA executable not found in PATH")
