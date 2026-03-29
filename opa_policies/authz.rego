@@ -4,10 +4,10 @@
 # for the Policy-as-Code Platform.
 #
 # Policy Package: authz
-# 
+#
 # This policy evaluates authorization requests based on:
 # - User attributes (role, department, designation)
-# - Resource attributes (type, department, sensitivity)
+# - Resource attributes (type, department, id)
 # - Action (read, write, delete)
 # - Environment (time, day, IP address)
 #
@@ -23,139 +23,161 @@ import future.keywords.in
 # Default deny - all access is denied unless explicitly allowed
 default allow := false
 
-# Default reason for denial
 default reason := "Access denied: No matching policy rule"
 
 # =============================================================================
-# RULE 1: Admin Full Access
+# ROLE-LEVEL BASED ACCESS
 # =============================================================================
-# Administrators have unrestricted access to all resources and actions.
-# This is the highest privilege level in the system.
+# - admin: full access to everything
+# - manager: read own department anytime; write own department only during office hours
+# - employee: view-only (read) and only for own department
 
 allow if {
-    input.user.role == "admin"
+    is_admin
 }
 
 reason := "Admin has full access to all resources" if {
-    input.user.role == "admin"
+    is_admin
 }
-
-# =============================================================================
-# RULE 2: Manager Access - Office Hours Only (9 AM - 6 PM)
-# =============================================================================
-# Managers can access resources during business hours.
-# They can read and write resources in their own department.
-# They cannot delete resources.
 
 allow if {
-    input.user.role == "manager"
+    is_manager
+    input.action == "read"
+    can_access_department
+    not is_settings_resource
+}
+
+allow if {
+    is_manager
+    input.action == "write"
     is_office_hours
-    input.action in ["read", "write"]
     can_access_department
 }
 
-reason := "Manager access granted during office hours for department resources" if {
-    input.user.role == "manager"
-    is_office_hours
-    input.action in ["read", "write"]
+reason := "Manager access granted: read department resources anytime" if {
+    is_manager
+    input.action == "read"
     can_access_department
 }
 
-reason := "Manager access denied: Outside office hours (9 AM - 6 PM)" if {
-    input.user.role == "manager"
-    not is_office_hours
+reason := "Manager access granted: write allowed during office hours for department resources" if {
+    is_manager
+    input.action == "write"
+    is_office_hours
+    can_access_department
 }
 
-reason := "Manager access denied: Delete action not permitted" if {
-    input.user.role == "manager"
-    input.action == "delete"
+reason := "Manager access denied: write only allowed during office hours, delete not permitted" if {
+    is_manager
+    input.action in ["write", "delete"]
+    not (input.action == "write" and is_office_hours and can_access_department)
 }
 
 reason := "Manager access denied: Cannot access other department resources" if {
-    input.user.role == "manager"
-    is_office_hours
+    is_manager
     input.action in ["read", "write"]
     not can_access_department
 }
 
-# =============================================================================
-# RULE 3: Employee Access - Read Only, Own Department
-# =============================================================================
-# Employees can only read resources from their own department.
-# They cannot write or delete any resources.
-
 allow if {
-    input.user.role == "employee"
+    is_employee
     input.action == "read"
     same_department
+    not is_sensitive_report
+    not is_settings_resource
 }
 
-reason := "Employee can read own department resources" if {
-    input.user.role == "employee"
+reason := "Employee can read own department resources anytime" if {
+    is_employee
     input.action == "read"
     same_department
+    not is_sensitive_report
+    not is_settings_resource
 }
 
-reason := "Employee access denied: Can only read, not write or delete" if {
-    input.user.role == "employee"
+reason := "Employee access denied: cannot write or delete resources" if {
+    is_employee
     input.action in ["write", "delete"]
 }
 
 reason := "Employee access denied: Cannot access other department data" if {
-    input.user.role == "employee"
+    is_employee
     input.action == "read"
     not same_department
 }
 
+reason := "Employee access denied: Reports are reserved for managers and admins" if {
+    is_employee
+    is_sensitive_report
+}
+
 # =============================================================================
-# HELPER FUNCTIONS
+# RESOURCE AND ENVIRONMENT HELPERS
 # =============================================================================
 
-# Check if current time is within office hours (9 AM to 6 PM)
+is_admin if {
+    input.user.role == "admin"
+}
+
+is_manager if {
+    input.user.role == "manager"
+}
+
+is_employee if {
+    input.user.role == "employee"
+}
+
 is_office_hours if {
     input.environment.hour >= 9
     input.environment.hour < 18
 }
 
-# Check if user and resource are in the same department
+is_delete_action if {
+    input.action == "delete"
+}
+
 same_department if {
     input.user.department == input.resource.department
 }
 
-# Also allow if resource has no specific department (general access)
 same_department if {
     input.resource.department == ""
 }
 
-# Check if user can access the resource's department
-# Managers can access their own department or general resources
 can_access_department if {
-    input.user.department == input.resource.department
+    same_department
 }
 
-can_access_department if {
-    input.resource.department == ""
+is_sensitive_report if {
+    input.resource.type == "report"
+}
+
+is_settings_resource if {
+    input.resource.type == "settings"
 }
 
 # =============================================================================
 # SPECIAL RESOURCE RULES
 # =============================================================================
 
-# Settings can only be accessed by admins (already covered by admin rule)
 reason := "Settings access requires admin role" if {
-    input.resource.type == "settings"
-    input.user.role != "admin"
+    is_settings_resource
+    not is_admin
 }
 
-# Sensitive reports require manager or admin role
 allow if {
-    input.resource.type == "report"
-    input.user.role in ["admin", "manager"]
+    is_sensitive_report
+    is_manager
     input.action == "read"
+}
+
+allow if {
+    is_sensitive_report
+    is_admin
 }
 
 reason := "Report access granted for managers and admins" if {
-    input.resource.type == "report"
-    input.user.role in ["admin", "manager"]
+    is_sensitive_report
     input.action == "read"
+    input.user.role in ["admin", "manager"]
 }

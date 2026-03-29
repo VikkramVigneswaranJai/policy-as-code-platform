@@ -88,13 +88,12 @@ def login():
         'username': user.username
     }
 
-    # 🔥 IMPORTANT: identity = username
+    # Use the database primary key as JWT identity for consistent lookup
     access_token = create_access_token(
-        identity=user.username,
+        identity=user.id,
         additional_claims=additional_claims
     )
 
-    # 🔥 STORE TOKEN IN COOKIE (CORRECT METHOD)
     response = make_response(jsonify({
         'status': 'success',
         'message': 'Login successful',
@@ -116,9 +115,9 @@ def login():
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
-    current_username = get_jwt_identity()
+    current_user_id = get_jwt_identity()
 
-    user = User.query.filter_by(username=current_username).first()
+    user = User.query.get(current_user_id)
 
     if not user:
         return jsonify({'status': 'error', 'message': 'User not found'}), 404

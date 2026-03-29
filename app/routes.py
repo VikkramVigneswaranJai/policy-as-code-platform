@@ -154,12 +154,14 @@ from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 def users_page():
     users = User.query.order_by(User.created_at.desc()).all()
 
-    current_username = get_jwt_identity()
+    current_user_id = get_jwt_identity()
     current_user_role = None
-    current_user = User.query.filter_by(username=current_username).first()
+    current_username = None
+    current_user = User.query.get(current_user_id)
     if current_user:
+        current_username = current_user.username
         current_user_role = current_user.role
-    logging.info(f"JWT USER: {current_username}")
+    logging.info(f"JWT USER ID: {current_user_id}")
 
     return render_template(
         'users.html',
@@ -171,8 +173,9 @@ def users_page():
 @main_bp.route('/users/<int:user_id>/delete', methods=['POST'])
 @admin_required
 def delete_user(user_id):
+    current_user_id = get_jwt_identity()
     user = User.query.get_or_404(user_id)
-    if user.username == get_jwt_identity():
+    if user.id == current_user_id:
         flash('Cannot delete yourself', 'error')
         return redirect(url_for('main.users_page'))
     db.session.delete(user)

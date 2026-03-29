@@ -34,6 +34,16 @@ is_extended_hours if {
     input.environment.hour < 22
 }
 
+# Check if it's before 6 PM
+is_before_six if {
+    input.environment.hour < 18
+}
+
+# Check if it's a weekend day
+is_weekend if {
+    not is_weekday
+}
+
 # =============================================================================
 # ACCESS RULES
 # =============================================================================
@@ -43,18 +53,25 @@ allow if {
     input.user.role == "admin"
 }
 
-# Managers: weekdays during extended hours
+# Managers can read anytime, but can write only on weekdays before 6 PM
 allow if {
     input.user.role == "manager"
-    is_weekday
-    is_extended_hours
+    input.action == "read"
 }
 
-# Employees: weekdays during office hours only
+allow if {
+    input.user.role == "manager"
+    input.action == "write"
+    is_weekday
+    is_before_six
+}
+
+# Managers cannot delete at any time
+
+# Employees can only read, at any time
 allow if {
     input.user.role == "employee"
-    is_weekday
-    is_office_hours
+    input.action == "read"
 }
 
 # Generate reason
@@ -62,24 +79,30 @@ reason := "Admin access: No time restrictions" if {
     input.user.role == "admin"
 }
 
-reason := "Manager access granted during extended hours (7 AM - 10 PM on weekdays)" if {
+reason := "Manager access granted: read anytime, write only weekdays before 6 PM" if {
     input.user.role == "manager"
-    is_weekday
-    is_extended_hours
+    input.action == "read"
 }
 
-reason := "Manager access denied: Outside extended hours or weekend" if {
+reason := "Manager access granted: write allowed weekdays before 6 PM" if {
     input.user.role == "manager"
-    not allow
-}
-
-reason := "Employee access granted during office hours (9 AM - 6 PM on weekdays)" if {
-    input.user.role == "employee"
+    input.action == "write"
     is_weekday
-    is_office_hours
+    is_before_six
 }
 
-reason := "Employee access denied: Outside office hours or weekend" if {
+reason := "Manager access denied: no write on weekends or after 6 PM, delete never allowed" if {
+    input.user.role == "manager"
+    input.action in ["write", "delete"]
+    not (is_weekday and is_before_six)
+}
+
+reason := "Employee access granted: read only at any time" if {
     input.user.role == "employee"
-    not allow
+    input.action == "read"
+}
+
+reason := "Employee access denied: employees cannot write or delete" if {
+    input.user.role == "employee"
+    input.action in ["write", "delete"]
 }
