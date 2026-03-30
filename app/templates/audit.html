@@ -93,7 +93,7 @@
     {% if pagination.pages > 1 %}
     <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
         <div class="text-sm text-gray-500">
-            Showing {{ (pagination.page - 1) * 20 + 1 }} to {{ min(pagination.page * 20, pagination.total) }} of {{ pagination.total }} results
+            Showing {{ (pagination.page - 1) * 20 + 1 }} to {{ [pagination.page * 20, pagination.total] | min }} of {{ pagination.total }} results
         </div>
         <div class="flex space-x-2">
             {% if pagination.has_prev %}
